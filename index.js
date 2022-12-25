@@ -1,7 +1,8 @@
 var net = require('net');
+var os = require("os"); 
 var server = net.createServer();    
 server.on('connection', handleConnection);
-server.listen(9000, function() {    
+server.listen(9123,"0.0.0.0", function() {    
   console.log('server listening to %j', server.address());  
 });
 function handleConnection(conn) {    
@@ -11,9 +12,13 @@ function handleConnection(conn) {
   conn.on('data', onConnData);  
   conn.once('close', onConnClose);  
   conn.on('error', onConnError);
+
+  var hostname = os.hostname();
+  conn.write(hostname+'\n'); // sending back hostname
+
   function onConnData(d) {  
     console.log('connection data from %s: %j', remoteAddress, d);  
-    conn.write(process.env.HOSTNAME); // sending back hostname
+    conn.write(hostname+'\n'); // sending back hostname
   }
   function onConnClose() {  
     console.log('connection from %s closed', remoteAddress);  
